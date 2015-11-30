@@ -1,0 +1,41 @@
+---
+- hosts: all:!role=bastion
+  gather_facts: no
+  tasks:
+    - name: Wait for ssh port to become available from bastion server.
+      wait_for:
+        port: "{{ ansible_ssh_port }}"
+        host: "{{ ansible_ssh_host }}"
+        delay: 10
+        timeout: 60
+      delegate_to: "{{ bastion_ip }}"
+      sudo: False
+      when: bastion_ip is defined
+    - name: Wait for port 22 to become available from local server.
+      local_action: "wait_for port={{ ansible_ssh_port }} host={{ ansible_ssh_host }} delay=10 timeout=60"
+      sudo: False
+      when: bastion_ip is not defined
+      
+- hosts: all:!role=bastion
+  tasks:
+    - name: set hostname to local ipv4 address
+      sudo: Yes
+      lineinfile:
+        dest: /etc/hosts
+        line: "{{ ansible_eth0.ipv4.address }} {{ ansible_hostname }}"
+  roles:
+    - consul
+        
+- hosts: mesos_masters
+  roles:
+    - zookeeper
+    - { role: mesos, mesos_install_mode: "master" }
+    - { role: marathon, when: marathon_enabled|bool }
+    
+- hosts: mesos_slaves
+  roles:
+    - { role: mesos, mesos_install_mode: "slave" }
+    
+- hosts: load_balancers
+  roles:
+    - { role: haproxy_marathon_bridge, tags: ["haproxy"] }
