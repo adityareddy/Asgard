@@ -7,6 +7,15 @@
 #  tags:
 #    - marathon
 
+- name: stop marathon service
+  sudo: yes
+  service:
+    name: marathon
+    state: stopped
+    enabled: no
+  tags:
+    - marathon
+
 - name: create marathon conf directory
   when: marathon_conf_dir is defined
   file:
@@ -14,6 +23,25 @@
     state: directory
     mode: 0755
   sudo: yes
+  tags:
+    - marathon
+
+- name: delete marathon init.d
+  file:
+    path: "/etc/init.d/marathon"
+    state: absent
+  sudo: yes
+  tags:
+    - marathon    
+    
+- name: configure marathon upstart conf
+  sudo: yes
+  template:
+    src: marathon.conf.j2
+    dest: /etc/init/marathon.conf
+    owner: root
+    group: root
+    mode: 0644
   tags:
     - marathon
 

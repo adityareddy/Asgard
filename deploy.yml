@@ -36,6 +36,7 @@
   roles:
     - { role: mesos, mesos_install_mode: "slave" }
     
-- hosts: load_balancers
+- hosts: all:!role=bastion
   roles:
     - { role: haproxy_marathon_bridge, tags: ["haproxy"] }
+    - mesos_dns

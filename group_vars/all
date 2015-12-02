@@ -1,6 +1,10 @@
 mesos_cluster_name: "Cluster01"
 zookeeper_client_port: "2181"
+marathon_client_port: "8080"
+mesos_master_port: "5050"
 zookeeper_server_group: zookeeper_servers
+loadbalancer_group: marathon_servers
+mesos_masters_group: mesos_masters
 zookeeper_peers_nodes: "
 	{%- if zookeeper_peers is defined -%}
 	    {{ zookeeper_peers }}
@@ -15,6 +19,20 @@ zookeeper_peers_nodes: "
 	    {{ zookeeper_peers|join(',') }}
 	{%- endif -%}
 "
+mesos_masters_peers_nodes: "
+	{%- if mesos_masters_peers is defined -%}
+	    {{ mesos_masters_peers }}
+	{%- else -%}
+	    {%- set mesos_masters_peers = [] -%}
+	    {%- for host in groups[mesos_masters_group] -%}
+	      {%- if host not in mesos_masters_peers -%}
+	        {%- set current_host = '\"' + hostvars[host]['ansible_ssh_host'] + ':' + mesos_master_port + '\"' -%}
+	        {%- do mesos_masters_peers.append(current_host) -%}
+	      {%- endif -%}
+	    {%- endfor -%}
+	    {{ mesos_masters_peers|join(',') }}
+	{%- endif -%}
+"
 consul_domain: consul
 proxy_env:
   http_proxy: ''
@@ -25,4 +43,3 @@ http_proxy: ''
 prometheus_enabled: true
 cadvisor_enabled: true
 marathon_enabled: true
-docker_host: 'unix:///var/run/weave/weave.sock'

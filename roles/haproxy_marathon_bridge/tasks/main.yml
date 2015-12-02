@@ -1,6 +1,21 @@
 ---
 - name: Install HAProxy
   apt: name=haproxy state=installed
+  
+- name: delete HAProxy init.d
+  file:
+    path: "/etc/init.d/haproxy"
+    state: absent
+  sudo: yes   
+    
+- name: configure HAProxy upstart conf
+  sudo: yes
+  template:
+    src: haproxy.conf.j2
+    dest: /etc/init/haproxy.conf
+    owner: root
+    group: root
+    mode: 0755
 
 - name: Start HAProxy
   service: name=haproxy state=started enabled=yes

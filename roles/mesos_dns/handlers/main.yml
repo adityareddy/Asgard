@@ -1,0 +1,7 @@
+---
+- name: restart traefik
+  service:
+    name: traefik
+    state: restarted
+  sudo: yes
+  
