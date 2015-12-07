@@ -1,62 +1,53 @@
----
-# tasks file for haproxy
-- name: "assures {{ consul_template_dir }} dirs exists"
-  file:
-    path: "{{ consul_template_dir }}/{{ item.path }}"
-    state: directory
-  with_items:
-    - { path: 'config' }
-    - { path: 'templates' }
-  tags:
-    - haproxy
-
-- name: upload template config files
+---  
+- name: Enable init script
+  replace: 
+    dest: "/etc/default/haproxy"
+    regexp: "ENABLED=0"
+    replace: "ENABLED=1"
+    
+- name: configure HAProxy conf
+  sudo: yes
   template:
-    src: consul.cfg.j2
-    dest: "{{ consul_template_dir }}/config/consul.cfg"
-    mode: 0644
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: 0755
+    
+- name: start haproxy
   sudo: yes
-  tags:
-    - haproxy
-
-- name: upload static config files
-  copy:
-    src: "{{ item.src }}"
-    dest: "{{ consul_template_dir }}/{{ item.dst }}"
-    mode: 0644
-  sudo: yes
-  with_items:
-    - { src: haproxy.cfg, dst: 'config/haproxy.cfg' }
-    - { src: haproxy.tmpl, dst: 'templates/haproxy.tmpl' }
-  tags:
-    - haproxy
-
-- name: destroy old haproxy container
-  when: haproxy_rebuild_container
-  docker:
+  service:
     name: haproxy
-    image: "{{ haproxy_image }}"
-    state: absent
-
-- name: run haproxy container
-  docker:
-    name: haproxy
-    image: "{{ haproxy_image }}"
     state: started
-    net: host
-    restart_policy: always
-    ports:
-      - "80:80"
-      - "34180:34180"
-    env:
-      HAPROXY_DOMAIN: "{{ haproxy_domain }}"
-      CONSUL_TEMPLATE_VERSION: "{{ consul_template_version }}"
-      CONSUL_LOGLEVEL: "{{ consul_template_loglevel }}"
-      CONSUL_CONNECT: "{{ consul_backend }}"
-      CONSUL_CONFIG: "/config"
-      SERVICE_NAME: haproxy
-    volumes:
-    - "{{ consul_template_dir }}/config:/config"
-    - "{{ consul_template_dir }}/templates:/templates"
-  tags:
-    - haproxy
+    enabled: yes
+    
+- name: configure bamboo conf
+  sudo: yes
+  template:
+    src: production.json.j2
+    dest: /var/bamboo/production.json
+    owner: root
+    group: root
+    mode: 0755
+    
+- name: configure bamboo haproxy conf
+  sudo: yes
+  copy:
+    src: haproxy_template.cfg
+    dest: /var/bamboo/haproxy_template.cfg
+    owner: root
+    group: root
+    mode: 0755
+    
+- name: start bamboo-server
+  sudo: yes
+  service:
+    name: bamboo-server
+    state: started
+    enabled: yes
+
+- name: Set haproxy consul service definition
+  sudo: yes
+  template:
+    src: haproxy-consul.j2
+    dest: "/etc/consul.d/haproxy.json"

@@ -53,7 +53,19 @@
     name: mesos-dns
     state: restarted
   sudo: yes
-    
+  
+- name: add entry to resolve.conf
+  copy:
+    content: "nameserver {{ ansible_eth0.ipv4.address }}\\n"
+    dest: "/etc/resolvconf/resolv.conf.d/head"
+    mode: 0644
+  sudo: yes
+  tags:
+    - mesos-dns
+ 
+- name: restart resolve.conf
+  shell: "sudo resolvconf -u"
+  
 #- name: generate mesos-dns consul service
 #  sudo: yes
 #  copy:

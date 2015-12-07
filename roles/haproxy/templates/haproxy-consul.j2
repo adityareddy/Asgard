@@ -1,0 +1,11 @@
+{
+  "service": {
+    "name": "haproxy",
+    "tags": [ "haproxy" ],
+    "port": {{ haproxy_port }},
+    "check": {
+      "script": "curl --silent --show-error  --fail --dump-header /dev/stderr --retry 2 http://{{ haproxy_hostname }}:{{ haproxy_port }}/ping",
+      "interval": "10s"
+    }
+  }
+}

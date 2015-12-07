@@ -1,0 +1,8 @@
+description "Haproxy"
+
+start on (local-filesystems and net-device-up IFACE=eth0)
+stop on runlevel [!12345]
+
+respawn
+
+exec /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg

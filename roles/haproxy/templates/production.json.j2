@@ -1,0 +1,28 @@
+{
+  "Marathon": {
+    "Endpoint": "{{ marathon_peers_nodes }}",
+    "UseEventStream": true
+  },
+
+  "Bamboo": {
+    "Endpoint": "http://localhost:8000",
+    "Zookeeper": {
+      "Host": "{{ zookeeper_peers_nodes }}",
+      "Path": "/marathon-haproxy/state",
+      "ReportingDelay": 5
+    }
+  },
+
+  "HAProxy": {
+    "TemplatePath": "/var/bamboo/haproxy_template.cfg",
+    "OutputPath": "/etc/haproxy/haproxy.cfg",
+    "ReloadCommand": "haproxy -f /etc/haproxy/haproxy.cfg -p /var/run/haproxy.pid -D -sf $(cat /var/run/haproxy.pid)",
+    "ReloadValidationCommand": "haproxy -c -f {{ '{{.}}' }}"
+  },
+
+  "StatsD": {
+    "Enabled": true,
+    "Host": "localhost:8125",
+    "Prefix": "bamboo-server.development."
+  }
+}

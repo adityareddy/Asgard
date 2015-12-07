@@ -8,11 +8,6 @@ variable "pvt_key_file" {
   default = "~/.ssh/id_rsa"
 }
 
-variable "ssh_fingerprint" {
-  description = "The ssh fingerprint for using with the cloud provider. ssh-keygen -lf ~/.ssh/id_rsa.pub | awk '{print $2}'"
-  default = "7c:5f:87:84:a6:cb:4e:53:78:59:31:b0:c7:e8:3b:f2"
-}
-
 variable "do_token" {
   description = "The Digital Ocean token."
   default = "471174d71c8f3887bd9e282f6f660e5814067ae633e63c23d47c46b44ccb85fc"
@@ -20,7 +15,7 @@ variable "do_token" {
 
 variable "region" {
   description = "The Digital Ocean region to create resources in."
-  default = "nyc1"
+  default = "sgp1"
 }
 
 variable "masters" {

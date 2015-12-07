@@ -31,12 +31,9 @@
     - zookeeper
     - { role: mesos, mesos_install_mode: "master" }
     - { role: marathon, when: marathon_enabled|bool }
+    - { role: haproxy }
     
 - hosts: mesos_slaves
   roles:
     - { role: mesos, mesos_install_mode: "slave" }
     
-- hosts: all:!role=bastion
-  roles:
-    - { role: haproxy_marathon_bridge, tags: ["haproxy"] }
-    - mesos_dns

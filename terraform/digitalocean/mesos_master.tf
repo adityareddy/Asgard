@@ -15,6 +15,7 @@ resource "digitalocean_droplet" "mesos-master" {
     provisioner "remote-exec" {
       scripts = [
         "${path.module}/../../scripts/base.sh",
+        "${path.module}/../../scripts/install_mesos_master.sh",
         "${path.module}/../../scripts/install_consul.sh"
       ]
     }
