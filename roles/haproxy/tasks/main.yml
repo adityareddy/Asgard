@@ -21,6 +21,12 @@
     state: started
     enabled: yes
     
+- name: wait for haproxy
+  wait_for:
+    host: "0.0.0.0"
+    port: 9090
+    delay: 10
+    
 - name: configure bamboo conf
   sudo: yes
   template:

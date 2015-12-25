@@ -1,9 +1,0 @@
-description "haproxy"
-
-start on runlevel [2345]
-stop on runlevel [!2345]
-
-respawn
-respawn limit 10 5
-
-exec /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg

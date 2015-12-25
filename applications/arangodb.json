@@ -1,0 +1,26 @@
+{
+   "id":"arangodb",
+   "cpus":0.3,
+   "mem":64,
+   "instances":1,
+   "maxLaunchDelaySeconds":36000,
+   "container":{
+      "docker":{
+         "image":"arangodb/arangodb-mesos:latest",
+         "network":"HOST"
+      }
+   },
+   "args":[
+      "framework"
+   ],
+   "env": {
+        "PORT0": "8181",
+        "MESOS_MASTER": "zk://128.199.228.133:2181/mesos",
+        "ARANGODB_ZK": "zk://128.199.228.133:2181/arangodb/arangodb",
+        "ARANGODB_NR_DBSERVERS": "1",
+        "ARANGODB_NR_COORDINATORS": "1",
+        "ARANGODB_MINIMAL_RESOURCES_AGENT": "cpus():0.3;mem():200;disk(*):1024",
+        "ARANGODB_MINIMAL_RESOURCES_DBSERVER": "cpus():0.3;mem():200;disk(*):1024",
+        "ARANGODB_MINIMAL_RESOURCES_COORDINATOR": "cpus():0.3;mem():200;disk(*):1024"
+    }
+}
