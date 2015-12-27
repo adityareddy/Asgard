@@ -62,15 +62,21 @@
   tags:
     - zookeeper
 
-#- name: Set Zookeeper consul service definition
-#  sudo: yes
-#  template:
-#    src: zookeeper-consul.j2
-#    dest: "{{ consul_dir }}/zookeeper.json"
-#  notify:
-#    - restart consul
-#  tags:
-#    - zookeeper
+- name: Set Zookeeper consul service definition
+  sudo: yes
+  template:
+    src: zookeeper-consul.j2
+    dest: "{{ consul_dir }}/zookeeper.json"
+  tags:
+    - zookeeper
+    
+- name: remove zookeeper.override
+  file:
+    path: "/etc/init/zookeeper.override"
+    state: absent
+  sudo: yes
+  tags:
+    - zookeeper
 
 - name: ensure zookeeper is running (and enable it at boot)
   sudo: yes

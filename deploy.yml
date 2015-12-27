@@ -37,3 +37,34 @@
   roles:
     - { role: mesos, mesos_install_mode: "slave" }
     
+- hosts: all:!role=bastion
+  roles:
+    - { role: mesos_dns }
+    - { role: prometheus, when: prometheus_enabled|bool }
+
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+    - uri:
+        url: "http://{{hostvars[groups[mesos_masters_group][0]]['ansible_ssh_host']}}:8080/v2/apps"
+        method: POST
+        body: "{{ lookup('template','applications/nodeapp.json.j2') }}"
+        HEADER_Content-Type: "application/json"
+        status_code: 201
+        body_format: json
+    - uri:
+        url: "http://{{hostvars[groups[mesos_masters_group][0]]['ansible_ssh_host']}}:8080/v2/apps"
+        method: POST
+        body: "{{ lookup('template','applications/prometheus.json.j2') }}"
+        HEADER_Content-Type: "application/json"
+        status_code: 201
+        body_format: json
+    - uri:
+        url: "http://{{hostvars[groups[mesos_masters_group][0]]['ansible_ssh_host']}}:8080/v2/apps"
+        method: POST
+        body: "{{ lookup('template','applications/crateio.json.j2') }}"
+        HEADER_Content-Type: "application/json"
+        status_code: 201
+        body_format: json
+  tags:
+     - applications

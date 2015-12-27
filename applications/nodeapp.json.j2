@@ -1,0 +1,23 @@
+{
+  "id": "bifrost",
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "image": "adityareddy/bifrost",
+      "privileged": true,
+      "network": "BRIDGE",
+      "portMappings": [{"containerPort": 3000, "hostPort": 0, "protocol": "tcp"}]
+    }
+  },
+  "instances": 2,
+  "cpus": 0.3,
+  "mem": 250,
+  "env": {
+    "NODE_ENV": "production",
+    "DB_CONNECTOR": "crateio",
+    "DB_HOST": "crate.marathon.corp",
+    "DB_PORT": "4200",
+    "HOST": "0.0.0.0",
+    "PORT": "3000"
+  }
+}

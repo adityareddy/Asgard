@@ -1,5 +1,5 @@
 {
-  "id": "crate-mesos-unicast",
+  "id": "crate",
   "container": {
     "type": "DOCKER",
     "docker": {
@@ -21,13 +21,13 @@
       }
     ]
   },
-  "instances": 3,
+  "instances": 2,
   "cpus": 0.4,
-  "mem": 240,
+  "mem": 400,
   "uris": [],
   "cmd": "crate -Des.cluster.name=mesos-unicast -Des.zen.discovery.minimum_master_nodes=2",
   "env": {
-    "CRATE_HOSTS": "mesos-slave-1:4300,mesos-slave-2:4300,mesos-slave-3:4300",
+    "CRATE_HOSTS": "{{database_peers_nodes}}",
     "CRATE_HEAP_SIZE": "200m"
   },
   "constraints": [

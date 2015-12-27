@@ -12,6 +12,7 @@
     - mesos-slave
 
 - name: Create mesos zookeeper addresses file
+  when: mesos_install_mode == "slave"
   copy:
     content: "zk://{{ zookeeper_peers_nodes }}/mesos"
     dest: "/etc/mesos/zk"
@@ -21,6 +22,7 @@
     - mesos-slave
     
 - name: Add docker to containerizers
+  when: mesos_install_mode == "slave"
   copy:
     content: "docker,mesos"
     dest: "/etc/mesos-slave/containerizers"
@@ -30,6 +32,7 @@
     - mesos-slave
     
 - name: Create ips file
+  when: mesos_install_mode == "slave"
   copy:
     content: "{{ ansible_eth0.ipv4.address }}"
     dest: "/etc/mesos-slave/ip"
@@ -39,6 +42,7 @@
     - mesos-slave
     
 - name: Create hosts file
+  when: mesos_install_mode == "slave"
   copy:
     content: "{{ ansible_eth0.ipv4.address }}"
     dest: "/etc/mesos-slave/hostname"
@@ -58,6 +62,7 @@
     - mesos-slave
     
 - name: Create override to mesos-master service
+  when: mesos_install_mode == "slave"
   copy:
     content: "manual"
     dest: "/etc/init/mesos-master.override"
@@ -77,6 +82,7 @@
     - mesos-slave
     
 - name: Create override to zookeeper service
+  when: mesos_install_mode == "slave"
   copy:
     content: "manual"
     dest: "/etc/init/zookeeper.override"
@@ -85,7 +91,16 @@
   tags:
     - mesos-slave
 
-- name: restart mesos-slave.
+- name: remove mesos-slave.override
+  when: mesos_install_mode == "slave"
+  file:
+    path: "/etc/init/mesos-slave.override"
+    state: absent
+  sudo: yes
+  tags:
+    - mesos-slave
+
+- name: restart mesos-slave
   when: mesos_install_mode == "slave"
   sudo: yes
   service:

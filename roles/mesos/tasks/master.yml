@@ -22,6 +22,7 @@
     - mesos-master
     
 - name: Create mesos zookeeper addresses file
+  when: mesos_install_mode == "master"
   copy:
     content: "zk://{{ zookeeper_peers_nodes }}/mesos"
     dest: "/etc/mesos/zk"
@@ -31,6 +32,7 @@
     - mesos-master
     
 - name: Create ips file
+  when: mesos_install_mode == "master"
   copy:
     content: "{{ ansible_eth0.ipv4.address }}"
     dest: "/etc/mesos-master/ip"
@@ -40,6 +42,7 @@
     - mesos-master
     
 - name: Create hosts file
+  when: mesos_install_mode == "master"
   copy:
     content: "{{ ansible_eth0.ipv4.address }}"
     dest: "/etc/mesos-master/hostname"
@@ -49,10 +52,20 @@
     - mesos-master
     
 - name: Create mesos quorum file
+  when: mesos_install_mode == "master"
   copy:
     content: "{{ mesos_quorum }}"
     dest: "/etc/mesos-master/quorum"
     mode: 0644
+  sudo: yes
+  tags:
+    - mesos-master
+    
+- name: remove mesos-master.override
+  when: mesos_install_mode == "master"
+  file:
+    path: "/etc/init/mesos-master.override"
+    state: absent
   sudo: yes
   tags:
     - mesos-master

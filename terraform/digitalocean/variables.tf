@@ -26,6 +26,6 @@ variable "slaves" {
 variable "instance_type" {
   default = {
     master = "512mb"
-    slave  = "512mb"
+    slave  = "1gb"
   }
 }

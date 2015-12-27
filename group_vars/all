@@ -2,9 +2,12 @@ mesos_cluster_name: "Cluster01"
 zookeeper_client_port: "2181"
 marathon_client_port: "8080"
 mesos_master_port: "5050"
+node_env: "production"
 zookeeper_server_group: zookeeper_servers
 loadbalancer_group: marathon_servers
 mesos_masters_group: mesos_masters
+database_group: mesos_slaves
+prometheus_group: all
 zookeeper_peers_nodes: "
 	{%- if zookeeper_peers is defined -%}
 	    {{ zookeeper_peers }}
@@ -45,6 +48,34 @@ marathon_peers_nodes: "
 	      {%- endif -%}
 	    {%- endfor -%}
 	    {{ marathon_peers|join(',') }}
+	{%- endif -%}
+"
+database_peers_nodes: "
+	{%- if database_peers is defined -%}
+	    {{ database_peers }}
+	{%- else -%}
+	    {%- set database_peers = [] -%}
+	    {%- for host in groups[database_group] -%}
+	      {%- if host not in database_peers -%}
+	        {%- set current_host = hostvars[host]['ansible_ssh_host'] + ':' + '4300' -%}
+	        {%- do database_peers.append(current_host) -%}
+	      {%- endif -%}
+	    {%- endfor -%}
+	    {{ database_peers|join(',') }}
+	{%- endif -%}
+"
+prometheus_peers_nodes: "
+	{%- if prometheus_peers is defined -%}
+	    {{ prometheus_peers }}
+	{%- else -%}
+	    {%- set prometheus_peers = [] -%}
+	    {%- for host in groups[prometheus_group] -%}
+	      {%- if host not in prometheus_peers -%}
+	        {%- set current_host = '\"' + hostvars[host]['ansible_ssh_host'] + ':' + '9100' + '\"' -%}
+	        {%- do prometheus_peers.append(current_host) -%}
+	      {%- endif -%}
+	    {%- endfor -%}
+	    {{ prometheus_peers|join(',') }}
 	{%- endif -%}
 "
 consul_domain: consul
