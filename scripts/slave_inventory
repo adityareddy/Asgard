@@ -1,0 +1,7 @@
+[mesos_slaves]
+127.0.0.1 ansible_ssh_host=127.0.0.1
+
+[zookeeper_servers:children]
+mesos_masters
+
+[mesos_masters]
