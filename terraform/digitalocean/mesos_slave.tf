@@ -15,7 +15,7 @@ resource "digitalocean_droplet" "mesos-slave" {
     provisioner "remote-exec" {
       scripts = [
         "${path.module}/../../scripts/base.sh",
-        "${path.module}/../../scripts/install_consul.sh"
+        "${path.module}/../../scripts/install_consul.sh",
         "${path.module}/../../scripts/install_mesos_slave.sh"
       ]
     }
