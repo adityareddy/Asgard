@@ -22,7 +22,7 @@ resource "digitalocean_droplet" "mesos-slave" {
     provisioner "remote-exec" {
         inline = [
           "cd ~/Asgard",
-          "./scripts/generate_slave_inventory.sh {join(",", digitalocean_droplet.mesos-master.*.private_ip} scripts/slave_inventory",
+          "./scripts/generate_slave_inventory.sh {join(',', digitalocean_droplet.mesos-master.*.private_ip} scripts/slave_inventory",
           "ansible-playbook -i scripts/slave_inventory deploy.yml --extra-vars 'ansible_ssh_host=127.0.0.1 ansible_ssh_port=22' --tags 'mesos-slave'"
         ]
     }
